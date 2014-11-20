@@ -1,0 +1,126 @@
+.vds-multirange-mk2-container {
+  position: relative;
+  width: 100%;
+  height: 78px;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.vds-multirange-mk2-hairlines-container {
+  margin-left: 5px;
+}
+
+.vds-multirange-mk2-hairlines {
+  position: relative;
+  width: 100%;
+  height: 25px;
+  padding: 0;
+  margin: auto;
+  list-style: none;
+}
+
+.vds-multirange-mk2-hairline {
+  position: absolute;
+  border-left: 1px solid black;
+}
+
+.vds-multirange-mk2-hairline span {
+  display: inline-block;
+  margin-left: -50%;
+  margin-top: 14px;
+  font-size: 11px;
+}
+
+.vds-multirange-container {
+  position: relative;
+  width: 100%;
+  height: 20px;
+  /*  overflow: hidden;*/
+  /* DO NOT MODIFY MARGIN */
+}
+
+.vds-multirange-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+.vds-multirange-track {
+  position: absolute;
+  top: 8px;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 4px;
+  border-radius: 4px;
+  background-color: rgba(210,210,210,0.8);
+}
+
+.vds-multirange {
+  -webkit-appearance: none;
+  width: 100%;
+  margin: 1px 0 0 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+.vds-multirange:focus {
+  outline: none;
+}
+
+.vds-multirange::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  border: none;
+  height: 20px;
+  width: 10px;
+  border-radius: 4px;
+  background: rgba(66,139,202,0.75);
+}
+
+.vds-multirange::-webkit-slider-runnable-track {
+  height: 1px;
+  border: none;
+  background: transparent;
+  margin-top: -1px;
+}
+
+.vds-multirange::-moz-range-thumb {
+  border: none;
+  height: 20px;
+  width: 10px;
+  border-radius: 4px;
+  background: rgba(66,139,202,0.75);
+}
+
+.vds-multirange::-moz-range-track {
+  height: 1px;
+  border: none;
+  background: transparent;
+  margin-top: -1px;
+}
+
+.vds-multirange::-ms-thumb {
+  border: none;
+  height: 20px;
+  width: 10px;
+  border-radius: 4px;
+  background: rgba(66,139,202,0.75);
+}
+
+.vds-multirange::-ms-track {
+  background: transparent;
+  color: transparent;
+  border-color: transparent;
+  border-width: 6px 0;
+}
+
+.vds-multirange::-ms-fill-lower {
+  height: 1px;
+  background-color: transparent;
+}
+
+.vds-multirange::-ms-fill-upper {
+  height: 1px;
+  background-color: transparent;
+}
