@@ -30,8 +30,8 @@ angular.module('vds.multirange.mk2', ['vds.multirange'])
       required: 'ngModel',
       scope: {
         ngModel: '=',
-        _zoom: '=zoom',
-        _hairlines: '=hairlines',
+//        _zoom: '=zoom',
+//        _hairlines: '=hairlines',
         _options: '=options'
       },
       template:
@@ -55,8 +55,8 @@ angular.module('vds.multirange.mk2', ['vds.multirange'])
       link: function (scope, elem, attr) {
 
         // defaults
-        scope._hairlines = [1/10, 1/20];
-        scope._zoom =  0.96;
+//        scope._hairlines = [1/10, 1/20];
+//        scope._zoom =  0.96;
         var processHairlines = function () {
           scope.hairlines = [];
           var levels = scope._hairlines.length;
@@ -77,12 +77,12 @@ angular.module('vds.multirange.mk2', ['vds.multirange'])
             }
           });
         };
-        scope.$watch('_hairlines', function () {
-          processHairlines();
-        });
-        scope.$watch('_zoom', function (n,o) {
-          scope.zoom = (scope._zoom instanceof vdsZoom)? scope._zoom : new vdsZoom(scope._zoom);
-        });
+//        scope.$watch('_hairlines', function () {
+//          processHairlines();
+//        });
+//        scope.$watch('_zoom', function (n,o) {
+//          scope.zoom = (scope._zoom instanceof vdsZoom)? scope._zoom : new vdsZoom(scope._zoom);
+//        });
         scope.hlStyle = function () {
           if(typeof scope.zoom == 'undefined') { return; }
           var style = {};
@@ -119,7 +119,7 @@ angular.module('vds.multirange.mk2', ['vds.multirange'])
   });
 
 angular.module('vds.multirange', [])
-  .directive('vdsMultirange', function () {
+  .directive('vdsMultirange', function (vdsRangeMarker) {
     return {
       required: 'ngModel',
       scope: {
@@ -130,13 +130,21 @@ angular.module('vds.multirange', [])
 '<div class="vds-multirange-container" ng-mousemove="onMousemove($event)">' +
 '<div class="vds-multirange-track"></div>' +
 '<div class="vds-multirange-wrapper" ng-repeat="range in ngModel" ng-style="{ zIndex: computeZ(range) }">' +
-'<vds-range class="vds-multirange" position="range.value" min="0" max="{{ precision }}" step="{{step}}">' +
+'<vds-range class="vds-multirange" ng-model="range.multipliedValue" min="0" max="{{precision}}" title="{{range.name}}" step="{{step}}">' +
 '</div>' +
 '</div>',
       link: function (scope, elem, attr) {
         var posx;
         scope.step = 1;
         scope.precision = 1000000;
+        scope.$watch('ngModel', function() {
+          angular.forEach(scope.ngModel, function (item,key) {
+            // todo: fix looping multiplication
+            if(!(item instanceof vdsRangeMarker)) {
+              scope.ngModel[key] = new vdsRangeMarker(item.value || item, item.name, scope.precision);
+            }
+          });
+        }, true);
         scope.$watch('_step', function () {
           if(typeof scope._step == 'undefined') {
             scope.step = 1;
@@ -155,33 +163,45 @@ angular.module('vds.multirange', [])
       }
     };
   })
+  .factory('vdsRangeMarker', function () {
+    var RangeMarker = function (value, name, multiplier) {
+      this.value = (isNaN(value))? 0 : value;
+      this.multiplier = multiplier || 1;
+      this.name = name;
+      this.multipliedValue = (parseFloat(this.value) * this.multiplier) +'';
+      Object.defineProperty(this, 'multipliedValue', {
+        get: function() {
+          return (parseFloat(this.value) * this.multiplier) +'';
+        },
+        set: function(val) {
+          this.value = parseInt(val) / this.multiplier;
+        }
+      });
+    };
+    return RangeMarker;
+  })
   .directive('vdsRange', function ($timeout) {
     return {
-      template: '<input type="range" ng-model="rdh.mulValue">',
+      template: '<input type="range">',
       restrict: 'E',
+      required: 'ngModel',
       replace: true,
       scope: {
-        position: '='
+        ngModel: '='
       },
       link: function (scope, elem, attr) {
-        var RangeDataHelper = function(value, multiplier) {
-          this.value = isNaN(value)? 0 : value;
-          this.multiplier = multiplier;
-          Object.defineProperty(this, 'mulValue', {
-            get: function() {
-              return (parseFloat(this.value) * this.multiplier) +'';
-            },
-            set: function(val) {
-              this.value = parseInt(val) / this.multiplier;
-              scope.position = this.value;
-            }
-          });
-        };
-        scope.$watch('position', function (n) {
-          if(typeof scope.rdh == 'undefined') {
-            scope.rdh = new RangeDataHelper(n, parseInt(attr.max) || 100);
+        // hack: weird first assignment doesn't reflect immediately
+        scope.count = 0;
+        var uw = scope.$watch('ngModel', function (n) {
+          if(scope.count == 0) {
+            scope.ngModel = undefined;
+            $timeout(function () {
+              scope.ngModel = n;
+            },10);
+            scope.count++;
           } else {
-            scope.rdh.value = n;
+            uw(); // unwatch
+            delete scope.count;
           }
         });
       }

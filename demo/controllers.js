@@ -8,6 +8,7 @@ angular.module('multirangeDemo')
       { value: 0.4, name: 'Start Break' },
       { value: 0.6, name: 'End Break' },
       { value: 0.8, name: 'Clock Out' },
+//      new vdsRangeMarker(0.2, 'Test value')
     ];
 
     $scope.add = function () {
