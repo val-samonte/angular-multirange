@@ -38,7 +38,7 @@ angular.module('vds.multirange.mk2', ['vds.multirange'])
 '<div class="vds-multirange-mk2-labels-container" ng-style="hlcStyle()">' +
 '<ul class="vds-multirange-mk2-labels" ng-style="hlStyle()">' +
 '<li class="vds-multirange-mk2-label" ng-repeat="range in ngModel" ng-style="{ left: (range.value*100)+\'%\', zIndex: range.z }">' +
-'<span>{{ range.name }}</span>' +
+'<span ng-show="range.name">{{ range.name }}</span>' +
 '</li>' +
 '</ul>' +
 '</div>' +
