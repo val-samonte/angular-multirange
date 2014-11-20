@@ -1,9 +1,45 @@
 .vds-multirange-mk2-container {
   position: relative;
   width: 100%;
-  height: 78px;
+  height: 110px;
   overflow-x: auto;
   overflow-y: hidden;
+}
+
+.vds-multirange-mk2-labels-container {
+  margin-left: 5px;
+}
+
+.vds-multirange-mk2-labels {
+  position: relative;
+  width: 100%;
+  height: 35px;
+  padding: 0;
+  margin: auto;
+  list-style: none;
+}
+
+.vds-multirange-mk2-label {
+  position: absolute;
+  bottom: 0px;
+  /* border-left: 1px solid black; */
+}
+
+.vds-multirange-mk2-label span {
+  display: inline-block;
+  margin-left: -50%;
+  font-size: 11px;
+  color: #fff;
+  font-family: 'Arial', sans-serif;
+  background-color: rgba(0,0,0,0.6);
+  border: none;
+  border-radius: 8px;
+  padding: 4px 6px;
+}
+
+.vds-multirange-mk2-hairline {
+  position: absolute;
+  border-left: 1px solid black;
 }
 
 .vds-multirange-mk2-hairlines-container {
@@ -21,7 +57,7 @@
 
 .vds-multirange-mk2-hairline {
   position: absolute;
-  border-left: 1px solid black;
+  border-left: 1px solid rgba(0,0,0,0.6);
 }
 
 .vds-multirange-mk2-hairline span {
@@ -29,13 +65,14 @@
   margin-left: -50%;
   margin-top: 14px;
   font-size: 11px;
+  color: rgba(0,0,0,0.6);
+  font-family: 'Arial', sans-serif;
 }
 
 .vds-multirange-container {
   position: relative;
   width: 100%;
   height: 20px;
-  /*  overflow: hidden;*/
   /* DO NOT MODIFY MARGIN */
 }
 
@@ -98,6 +135,10 @@
   border: none;
   background: transparent;
   margin-top: -1px;
+}
+
+.vds-multirange::-ms-tooltip {
+  display: none;
 }
 
 .vds-multirange::-ms-thumb {

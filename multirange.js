@@ -35,13 +35,19 @@ angular.module('vds.multirange.mk2', ['vds.multirange'])
       },
       template:
 '<div class="vds-multirange-mk2-container">' +
-'<vds-multirange ng-model="ngModel" style="display: block; margin: auto;" ng-style="{ width: zoom.getPercent() }">' +
-'</vds-multirange>' +
+'<div class="vds-multirange-mk2-labels-container" ng-style="hlcStyle()">' +
+'<ul class="vds-multirange-mk2-labels" ng-style="hlStyle()">' +
+'<li class="vds-multirange-mk2-label" ng-repeat="range in ngModel" ng-style="{ left: (range.value*100)+\'%\', zIndex: range.z }">' +
+'<span>{{ range.name }}</span>' +
+'</li>' +
+'</ul>' +
+'</div>' +
+'<vds-multirange ng-model="ngModel" style="display: block; margin: auto;" ng-style="{ width: zoom.getPercent() }"></vds-multirange>' +
 '<div class="vds-multirange-mk2-hairlines-container" ng-style="hlcStyle()">'+
 '<ul class="vds-multirange-mk2-hairlines" ng-style="hlStyle()">' +
-'<li class="vds-multirange-mk2-hairline" ng-repeat="hairline in hairlines" ' +
-'ng-style="{ height: hairline.h, left: hairline.x }">' +
-'<span>{{ hairline.label }}</span></li>' +
+'<li class="vds-multirange-mk2-hairline" ng-repeat="hairline in hairlines" ng-style="{ height: hairline.h, left: hairline.x }">' +
+'<span>{{ hairline.label }}</span>' +
+'</li>' +
 '</ul>' +
 '</div>' +
 '</div>',
@@ -122,7 +128,7 @@ angular.module('vds.multirange', [])
       template:
 '<div class="vds-multirange-container" ng-mousemove="onMousemove($event)">' +
 '<div class="vds-multirange-track"></div>' +
-'<div class="vds-multirange-wrapper" ng-repeat="range in ngModel" ng-style="{ zIndex: computeZ(range.value) }">' +
+'<div class="vds-multirange-wrapper" ng-repeat="range in ngModel" ng-style="{ zIndex: computeZ(range) }">' +
 '<vds-range class="vds-multirange" ng-model="range.multipliedValue" min="0" max="{{ precision }}" title="{{ range.name }}">' +
 '</div>' +
 '</div>',
@@ -141,8 +147,9 @@ angular.module('vds.multirange', [])
           var bound = elem[0].getBoundingClientRect()
           posx = (evt.pageX - bound.left) / bound.width;
         };
-        scope.computeZ = function (val) {
-          return 100 - Math.round(Math.abs(posx-val)*100);
+        scope.computeZ = function (range) {
+          range.z = 100 - Math.round(Math.abs(posx-range.value)*100);
+          return range.z;
         };
       }
     };
