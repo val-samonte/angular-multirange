@@ -24,8 +24,8 @@ SOFTWARE.
 
 'use strict';
 
-angular.module('vds.multirange.mk2', ['vds.multirange'])
-  .directive('vdsMultirangeMk2', function () {
+angular.module('vds.multirange.mk2', ['vds.multirange', 'vds.utils'])
+  .directive('vdsMultirangeMk2', function (vdsMultirangeMk2Templates) {
     return {
       required: 'ngModel',
       scope: {
@@ -45,13 +45,16 @@ angular.module('vds.multirange.mk2', ['vds.multirange'])
         };
 
         scope.$watch('options.zoom.index', function (n) {
+          if(typeof n == 'undefined') return;
           var l = scope.options.zoom.levels.length-1, level;
           n = (n < 0)? 0 : ( (n > l)? l : n );
           level = scope.options.zoom.levels[scope.options.zoom.index];
-          scope.zoom = level.value;
-          scope.step = level.step;
-          scope.units = level.units;
-          scope.renderer();
+          if(typeof level != 'undefined') {
+            scope.zoom = level.value;
+            scope.step = level.step;
+            scope.units = level.units;
+            scope.renderer();
+          }
         });
 
         scope.renderer = function () {
@@ -78,6 +81,11 @@ angular.module('vds.multirange.mk2', ['vds.multirange'])
           return scope.renderedStyle = render;
         };
 
+        // set default options
+        if(typeof scope.options == 'undefined') {
+          scope.options = vdsMultirangeMk2Templates.DEFAULT;
+        }
+
       }
     };
   })
@@ -100,7 +108,7 @@ angular.module('vds.multirange.mk2', ['vds.multirange'])
         scope.renderRange = function (range) {
           return {
             left: (range.value*100)+'%',
-            zIndex: range.depth
+            zIndex: range._depth
           }
         }
       }
@@ -148,6 +156,45 @@ angular.module('vds.multirange.mk2', ['vds.multirange'])
 
       }
     };
+  })
+  .factory('vdsMultirangeMk2Templates', function (vdsUtils) {
+    var tv = vdsUtils.time.fromTimeToValue,
+      vt = vdsUtils.time.fromValueToTime;
+    return {
+      TIME: { zoom: { index: 0, levels: [
+          { value: 0.9, step: tv(0,15), units: [
+            { value: tv(1,0), labeller: function (n) { return vt(n).hours+'h' } },
+            { value: tv(0,30) }
+          ] },
+          { value: 1.2, step: tv(0,10), units: [
+            { value: tv(1,0), labeller: function (n) { return vt(n).hours+'h' } },
+            { value: tv(0,30) }
+          ] },
+          { value: 1.4, step: tv(0,6), units: [
+            { value: tv(1,0), labeller: function (n) { return vt(n).hours+'h' } },
+            { value: tv(0,30) },
+            { value: tv(0,12) }
+          ] },
+          { value: 3.4, step: tv(0,1), units: [
+            { value: tv(1,0) },
+            { value: tv(0,15), labeller: function (n) {
+              var h = vt(n).hours, m = vt(n).minutes;
+              if(m == 0) {
+                return h+'h'
+              } else {
+                return vt(n).hours+':'+vt(n).minutes
+              }
+            } },
+            { value: tv(0,5) }
+          ] }
+        ] }
+      },
+      DEFAULT: { zoom: { index: 0, levels: [
+          { value: 0.9, step: 1/40, units: [ { value: 1/10, labeller: function (n) { return n*10 } }, { value: 1/20, } ] },
+          { value: 1.5, step: 1/80, units: [ { value: 1/20, labeller: function (n) { return n*10 } }, { value: 1/40, } ] }
+        ] }
+      }
+    }
   });
 
 angular.module('vds.multirange', [])
@@ -174,9 +221,9 @@ angular.module('vds.multirange', [])
           mousex = (evt.pageX - bound.left) / bound.width;
         };
         scope.computeDepth = function (range) {
-          range.depth = 100 - Math.round(Math.abs(mousex-range.value)*100);
+          range._depth = 100 - Math.round(Math.abs(mousex-range.value)*100);
           return {
-            zIndex: range.depth
+            zIndex: range._depth
           };
         };
         scope.$watch('step', function () {
@@ -219,6 +266,28 @@ angular.module('vds.multirange', [])
             scope.rdh.value = n;
           }
         });
+      }
+    }
+  });
+
+angular.module('vds.utils', [])
+  .factory('vdsUtils', function() {
+    var dayConst = 24*60*60*1000;
+    return {
+      time: {
+        fromTimeToValue: function (hours, minutes) {
+          var d = new Date(0);
+          d.setUTCHours(hours);
+          d.setUTCMinutes(minutes);
+          return d.getTime() / dayConst;
+        },
+        fromValueToTime: function (value) {
+          var d = new Date(dayConst * value);
+          return {
+            hours: d.getUTCHours(),
+            minutes: d.getUTCMinutes()
+          };
+        }
       }
     }
   });
