@@ -180,9 +180,9 @@ angular.module('vds.multirange.mk2', ['vds.multirange', 'vds.utils'])
             { value: tv(0,15), labeller: function (n) {
               var h = vt(n).hours, m = vt(n).minutes;
               if(m == 0) {
-                return h+'h'
+                return h+'h';
               } else {
-                return vt(n).hours+':'+vt(n).minutes
+                return h+':'+m;
               }
             } },
             { value: tv(0,5) }
