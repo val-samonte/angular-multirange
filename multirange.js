@@ -25,97 +25,129 @@ SOFTWARE.
 'use strict';
 
 angular.module('vds.multirange.mk2', ['vds.multirange'])
-  .directive('vdsMultirangeMk2', function (vdsZoom) {
+  .directive('vdsMultirangeMk2', function () {
     return {
       required: 'ngModel',
       scope: {
         ngModel: '=',
-        _zoom: '=zoom',
-        _hairlines: '=hairlines',
-        _options: '=options'
+        options: '='
       },
       template:
-'<div class="vds-multirange-mk2-container">' +
-'<div class="vds-multirange-mk2-labels-container" ng-style="hlcStyle()">' +
-'<ul class="vds-multirange-mk2-labels" ng-style="hlStyle()">' +
-'<li class="vds-multirange-mk2-label" ng-repeat="range in ngModel" ng-style="{ left: (range.value*100)+\'%\', zIndex: range.z }">' +
-'<span ng-show="range.name">{{ range.name }}</span>' +
-'</li>' +
-'</ul>' +
-'</div>' +
-'<vds-multirange ng-model="ngModel" style="display: block; margin: auto;" ng-style="{ width: zoom.getPercent() }"></vds-multirange>' +
-'<div class="vds-multirange-mk2-hairlines-container" ng-style="hlcStyle()">'+
-'<ul class="vds-multirange-mk2-hairlines" ng-style="hlStyle()">' +
-'<li class="vds-multirange-mk2-hairline" ng-repeat="hairline in hairlines" ng-style="{ height: hairline.h, left: hairline.x }">' +
-'<span>{{ hairline.label }}</span>' +
-'</li>' +
-'</ul>' +
-'</div>' +
-'</div>',
+      '<div class="vds-multirange-mk2-container">' +
+        '<vds-multirange-mk2-labels render="renderedStyle" ng-model="ngModel"></vds-multirange-mk2-labels>' +
+        '<vds-multirange ng-model="ngModel" ng-style="renderedStyle.multirange" step="step"></vds-multirange>' +
+        '<vds-multirange-mk2-hairlines render="renderedStyle" ng-model="units"></vds-multirange-mk2-hairlines>' +
+      '</div>',
       link: function (scope, elem, attr) {
 
-        // defaults
-        scope._hairlines = [1/10, 1/20];
-        scope._zoom =  0.96;
-        var processHairlines = function () {
-          scope.hairlines = [];
-          var levels = scope._hairlines.length;
-          var hairHeight = 12; // px
-          angular.forEach( scope._hairlines, function(item, key) {
-            // populate hairlines
-            var mark = 0;
-            for(var i=0; i<=1; i = parseFloat((i+item).toFixed(8))) {
-              var hairline = {
-                h: hairHeight * (1 - key / levels),
-                x: (i*100)+'%'
-              }
-              if(key == 0) {
-                hairline.label = mark;
-                mark++;
-              }
-              scope.hairlines.push(hairline);
+        scope.getPercent = function(value) {
+          return (value*100) + '%';
+        };
+
+        scope.$watch('options.zoom.index', function (n) {
+          var l = scope.options.zoom.levels.length-1, level;
+          n = (n < 0)? 0 : ( (n > l)? l : n );
+          level = scope.options.zoom.levels[scope.options.zoom.index];
+          scope.zoom = level.value;
+          scope.step = level.step;
+          scope.units = level.units;
+          scope.renderer();
+        });
+
+        scope.renderer = function () {
+          if(typeof scope.zoom == 'undefined') return;
+          var render = {
+            container: {},
+            content: {},
+            multirange: {
+              width: scope.getPercent(scope.zoom),
+              display: 'block',
+              margin: 'auto'
             }
-          });
-        };
-        scope.$watch('_hairlines', function () {
-          processHairlines();
-        });
-        scope.$watch('_zoom', function (n,o) {
-          scope.zoom = (scope._zoom instanceof vdsZoom)? scope._zoom : new vdsZoom(scope._zoom);
-        });
-        scope.hlStyle = function () {
-          if(typeof scope.zoom == 'undefined') { return; }
-          var style = {};
-          if(scope.zoom.value<1) {
-            style.margin = '2 auto';
-            style.width = 'calc('+scope.zoom.getPercent()+' - 10px)';
+          };
+
+          if(scope.zoom < 1) {
+            render.content.margin = '2 auto';
+            render.content.width = 'calc('+scope.getPercent(scope.zoom)+' - 10px)';
+            render.container.marginLeft = '0';
           } else {
-            style.margin = '2 0';
-            style.width = 'calc('+scope.zoom.getPercent()+' - '+ ( 10 - ( scope.zoom.value*5 ) ) +'px)';
+            render.content.margin = '2 0';
+            render.content.width = 'calc('+scope.getPercent(scope.zoom)+' - '+ ( 10 - ( scope.zoom * 5 ) ) +'px)';
+            render.container.marginLeft = '5px';
           }
-          return style;
+          return scope.renderedStyle = render;
         };
-        scope.hlcStyle = function () {
-          if(typeof scope.zoom == 'undefined') { return; }
-          return {
-            "margin-left": (scope.zoom.value<1)? '0' : '5px'
-          }
-        };
+
       }
     };
   })
-  .factory('vdsZoom', function () {
-    var Zoom = function (value, step) {
-      this.value = parseFloat(value);
-      this.step = step;
+  .directive('vdsMultirangeMk2Labels', function () {
+    return {
+      restrict: 'E',
+      scope: {
+        ngModel: '=',
+        render: '='
+      },
+      template:
+      '<div class="vds-multirange-mk2-labels-container" ng-style="render.container">' +
+        '<ul class="vds-multirange-mk2-labels" ng-style="render.content">' +
+          '<li class="vds-multirange-mk2-label" ng-repeat="range in ngModel" ng-style="renderRange(range)">' +
+            '<span ng-show="range.name">{{ range.name }}</span>' +
+          '</li>' +
+        '</ul>' +
+      '</div>',
+      link: function (scope, elem, attr) {
+        scope.renderRange = function (range) {
+          return {
+            left: (range.value*100)+'%',
+            zIndex: range.depth
+          }
+        }
+      }
+    }
+  })
+  .directive('vdsMultirangeMk2Hairlines', function () {
+    return {
+      restrict: 'E',
+      scope: {
+        ngModel: '=',
+        render: '='
+      },
+      template:
+      '<div class="vds-multirange-mk2-hairlines-container" ng-style="render.container">'+
+        '<ul class="vds-multirange-mk2-hairlines" ng-style="render.content">' +
+          '<li class="vds-multirange-mk2-hairline" ng-repeat="hairline in hairlines" ng-style="hairline.render">' +
+            '<span>{{ hairline.label }}</span>' +
+          '</li>' +
+        '</ul>' +
+      '</div>',
+      link: function (scope, elem, attr) {
+
+        scope.$watch('ngModel', function (n) {
+          if(typeof n == 'undefined') return;
+          scope.hairlines = [];
+          var levels = n.length, hairHeight = 12, hairline, i, j, u;
+          for(i = 0; i < levels; i++) {
+            u = n[i];
+            for( j = 0; j<=1; j = parseFloat((j + u.value).toFixed(8)) ) {
+              hairline = {
+                render: {
+                  height: hairHeight * (1 - i / levels),
+                  left: (j*100)+'%'
+                }
+              }
+              if(typeof u.labeller == 'function') {
+                hairline.label = u.labeller(j);
+              } else if(typeof u.labeller != 'undefined') {
+                hairline.label = j;
+              }
+              scope.hairlines.push(hairline);
+            }
+          }
+        });
+
+      }
     };
-    Zoom.prototype.getPercent = function () {
-      return (this.value*100) + '%';
-    }
-    Zoom.prototype.setPercent = function (stringPercent) {
-      this.value = parseInt(stringPercent) / 100;
-    }
-    return Zoom;
   });
 
 angular.module('vds.multirange', [])
@@ -124,34 +156,36 @@ angular.module('vds.multirange', [])
       required: 'ngModel',
       scope: {
         ngModel: '=',
-        _step: '=step'
+        step: '='
       },
       template:
-'<div class="vds-multirange-container" ng-mousemove="onMousemove($event)">' +
-'<div class="vds-multirange-track"></div>' +
-'<div class="vds-multirange-wrapper" ng-repeat="range in ngModel" ng-style="{ zIndex: computeZ(range) }">' +
-'<vds-range class="vds-multirange" position="range.value" min="0" max="{{ precision }}" step="{{step}}">' +
-'</div>' +
-'</div>',
+      '<div class="vds-multirange-container" ng-mousemove="onMouseMove($event)">' +
+        '<div class="vds-multirange-track"></div>' +
+        '<div class="vds-multirange-wrapper" ng-repeat="range in ngModel" ng-style="computeDepth(range)">' +
+          '<vds-range class="vds-multirange" position="range.value" min="0" max="{{ precision }}" step="{{ preciseStep }}">' +
+        '</div>' +
+      '</div>',
       link: function (scope, elem, attr) {
-        var posx;
-        scope.step = 1;
+        var mousex;
         scope.precision = 1000000;
-        scope.$watch('_step', function () {
-          if(typeof scope._step == 'undefined') {
-            scope.step = 1;
+        scope.preciseStep = 1;
+        scope.onMouseMove = function (evt) {
+          var bound = elem[0].getBoundingClientRect();
+          mousex = (evt.pageX - bound.left) / bound.width;
+        };
+        scope.computeDepth = function (range) {
+          range.depth = 100 - Math.round(Math.abs(mousex-range.value)*100);
+          return {
+            zIndex: range.depth
+          };
+        };
+        scope.$watch('step', function () {
+          if(typeof scope.step == 'undefined') {
+            scope.preciseStep = 1;
           } else {
-            scope.step = scope._step * scope.precision;
+            scope.preciseStep = scope.step * scope.precision;
           }
         });
-        scope.onMousemove = function (evt) {
-          var bound = elem[0].getBoundingClientRect()
-          posx = (evt.pageX - bound.left) / bound.width;
-        };
-        scope.computeZ = function (range) {
-          range.z = 100 - Math.round(Math.abs(posx-range.value)*100);
-          return range.z;
-        };
       }
     };
   })
@@ -171,8 +205,8 @@ angular.module('vds.multirange', [])
             get: function() {
               return (parseFloat(this.value) * this.multiplier) +'';
             },
-            set: function(val) {
-              this.value = parseInt(val) / this.multiplier;
+            set: function(n) {
+              this.value = parseInt(n) / this.multiplier;
               scope.position = this.value;
             }
           });
@@ -181,6 +215,7 @@ angular.module('vds.multirange', [])
           if(typeof scope.rdh == 'undefined') {
             scope.rdh = new RangeDataHelper(n, parseInt(attr.max) || 100);
           } else {
+            // scope.rdh.multiplier = parseInt(attr.max) || 100;
             scope.rdh.value = n;
           }
         });

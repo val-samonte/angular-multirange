@@ -10,14 +10,14 @@
   <div ng-controller="DemoCtrl">
     <div>
       <input type="text" ng-model="entry" placeholder="add entry"><button type="button" ng-click="add()">Add</button>
-      <input type="number" ng-model="zoom" placeholder="zoom">
+      <input type="number" ng-model="options.zoom.index" placeholder="zoom">
     </div>
     <div style="margin-bottom: 10px;">
       <div ng-repeat="range in rangeArray">
       <input style="display:block;" type="number" ng-model="range.value">
       </div>
     </div>
-    <vds-multirange-mk2 ng-model="rangeArray" style="margin-bottom: 10px;" zoom="zoom" hairlines="hairlines"></vds-multirange-mk2>
+    <vds-multirange-mk2 ng-model="rangeArray" style="margin-bottom: 10px;" options="options"></vds-multirange-mk2>
   </div>
 
   <script src="../bower_components/angular/angular.js"></script>
