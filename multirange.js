@@ -27,7 +27,7 @@ angular.module('vds.multirange', ['vds.multirange.lite', 'vds.utils'])
           return (value*100) + '%';
         };
 
-        scope.$watch('view', function (n) {
+        scope.changeView = function (n) {
           if(typeof n == 'undefined' || typeof scope.views == 'undefined') return;
           var l = scope.views.length-1, view;
           n = (n < 0)? 0 : ( (n > l)? l : n );
@@ -38,15 +38,16 @@ angular.module('vds.multirange', ['vds.multirange.lite', 'vds.utils'])
             scope.units = view.units;
             scope.renderer();
           }
-        });
+        };
 
         scope.$watch('_view', function (n) {
-          scope.view = n;
+          scope.changeView(n);
         });
 
         scope.$watch('_views', function (n) {
           scope.views = n;
-          scope._view = 0;
+          scope.view = 0;
+          scope.changeView(0);
         });
 
         scope.renderer = function () {
@@ -77,6 +78,7 @@ angular.module('vds.multirange', ['vds.multirange.lite', 'vds.utils'])
         if(typeof scope.views == 'undefined') {
           scope.views = vdsMultirangeViews.DEFAULT;
           scope.view = 0;
+          scope.changeView(0);
         }
 
       }
