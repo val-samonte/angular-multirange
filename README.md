@@ -61,3 +61,8 @@ then apply the view configuration using the views attribute
 ```html
 <vds-multirange ng-model="rangeArray" view="viewIndex" views="views"></vds-multirange>
 ```
+##vds-multirange-lite
+a light version of this slider also comes with this module, which excludes the label and the unit measures.
+```html
+<vds-multirange-lite ng-model="rangeArray"></vds-multirange-lite>
+```
