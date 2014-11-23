@@ -1,3 +1,3 @@
 'use strict';
 
-angular.module('multirangeDemo', ['vds.multirange.mk2']);
+angular.module('multirangeDemo', ['vds.multirange']);

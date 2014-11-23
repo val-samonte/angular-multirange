@@ -1,47 +1,63 @@
 angular-multirange
 ===================
 
-Multiple input[type="range"] as AngularJS directive
+AngularJS slider component with multiple thumbs support.
 
-###Todo
-* SASS
-* minified version
-* optimization
-* documentation
+###Install
+```
+bower install val-samonte/angular-multirange
+```
+include both multirange.js and multirange.css
+add vds.multirange as angularjs dependency module
 
-###multirange-mk2 example options
+###Usage
+```html
+<vds-multirange ng-model="rangeArray" view="viewIndex"></vds-multirange>
+```
+rangeArray:
 ```javascript
-$scope.options = {
-  zoom: {
-    index: 0, // index for levels
-    levels: [
+$scope.rangeArray = [
+  { value: 0.2, name: 'Clock In' },
+  { value: 0.4, name: 'Start Break' },
+  { value: 0.6, name: 'End Break' },
+  { value: 0.8, name: 'Clock Out' }
+]
+```
+
+###vds-multirange sample view configuration
+```javascript
+$scope.views = [
+  {
+    zoom: 0.9,
+    step: 1/40,
+    // visible units for this view, first entry being the major unit
+    units: [
       {
-        value: 0.9, // zoom value for this level
-        step: 1/40, // step value
-        units: [ // visible units for this level
-          {
-            value: 1/10, // unit value
-            labeller: function (n) { return n*10 } // function to transform your value into labels | true: value itself | false: none
-          },
-          {
-            value: 1/20,
-          }
-        ]
+        value: 1/10,
+        // function to transform your value into labels | true: value itself | false: none
+        labeller: function (n) { return n*10 } 
       },
       {
-        value: 1.5,
-        step: 1/80,
-        units: [
-          {
-            value: 1/20,
-            labeller: function (n) { return n*10 }
-          },
-          {
-            value: 1/40,
-          }
-        ]
+        value: 1/20,
+      }
+    ]
+  },
+  {
+    zoom: 1.5,
+    step: 1/80,
+    units: [
+      {
+        value: 1/20,
+        labeller: function (n) { return n*10 }
+      },
+      {
+        value: 1/40,
       }
     ]
   }
-};
+];
+```
+then apply the view configuration using the views attribute
+```html
+<vds-multirange ng-model="rangeArray" view="viewIndex" views="views"></vds-multirange>
 ```

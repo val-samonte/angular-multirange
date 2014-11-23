@@ -1,42 +1,25 @@
 /*
-The MIT License (MIT)
-
-Copyright (c) 2014 Val Allen Samonte
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-*/
+ * multirange.js v0.1.2
+ * (c) 2014 Val Allen Samonte val.samonte@gmail.com
+ * License: MIT
+ */
 
 'use strict';
 
-angular.module('vds.multirange.mk2', ['vds.multirange', 'vds.utils'])
-  .directive('vdsMultirangeMk2', function (vdsMultirangeMk2Templates) {
+angular.module('vds.multirange', ['vds.multirange.lite', 'vds.utils'])
+  .directive('vdsMultirange', function (vdsMultirangeViews) {
     return {
       required: 'ngModel',
       scope: {
         ngModel: '=',
-        options: '='
+        views: '=',
+        view: '='
       },
       template:
       '<div class="vds-multirange-mk2-container">' +
-        '<vds-multirange-mk2-labels render="renderedStyle" ng-model="ngModel"></vds-multirange-mk2-labels>' +
-        '<vds-multirange ng-model="ngModel" ng-style="renderedStyle.multirange" step="step"></vds-multirange>' +
-        '<vds-multirange-mk2-hairlines render="renderedStyle" ng-model="units"></vds-multirange-mk2-hairlines>' +
+        '<vds-multirange-labels render="renderedStyle" ng-model="ngModel"></vds-multirange-labels>' +
+        '<vds-multirange-lite ng-model="ngModel" ng-style="renderedStyle.multirange" step="step"></vds-multirange-lite>' +
+        '<vds-multirange-hairlines render="renderedStyle" ng-model="units"></vds-multirange-hairlines>' +
       '</div>',
       link: function (scope, elem, attr) {
 
@@ -44,17 +27,21 @@ angular.module('vds.multirange.mk2', ['vds.multirange', 'vds.utils'])
           return (value*100) + '%';
         };
 
-        scope.$watch('options.zoom.index', function (n) {
+        scope.$watch('view', function (n) {
           if(typeof n == 'undefined') return;
-          var l = scope.options.zoom.levels.length-1, level;
+          var l = scope.views.length-1, view;
           n = (n < 0)? 0 : ( (n > l)? l : n );
-          level = scope.options.zoom.levels[scope.options.zoom.index];
-          if(typeof level != 'undefined') {
-            scope.zoom = level.value;
-            scope.step = level.step;
-            scope.units = level.units;
+          view = scope.views[n];
+          if(typeof view != 'undefined') {
+            scope.zoom = view.zoom;
+            scope.step = view.step;
+            scope.units = view.units;
             scope.renderer();
           }
+        });
+
+        scope.$watch('views', function (n) {
+          scope.view = 0;
         });
 
         scope.renderer = function () {
@@ -81,15 +68,15 @@ angular.module('vds.multirange.mk2', ['vds.multirange', 'vds.utils'])
           return scope.renderedStyle = render;
         };
 
-        // set default options
-        if(typeof scope.options == 'undefined') {
-          scope.options = vdsMultirangeMk2Templates.DEFAULT;
+        // set default view config
+        if(typeof scope.views == 'undefined') {
+          scope.views = vdsMultirangeViews.DEFAULT;
         }
 
       }
     };
   })
-  .directive('vdsMultirangeMk2Labels', function () {
+  .directive('vdsMultirangeLabels', function () {
     return {
       restrict: 'E',
       scope: {
@@ -114,7 +101,7 @@ angular.module('vds.multirange.mk2', ['vds.multirange', 'vds.utils'])
       }
     }
   })
-  .directive('vdsMultirangeMk2Hairlines', function () {
+  .directive('vdsMultirangeHairlines', function () {
     return {
       restrict: 'E',
       scope: {
@@ -157,48 +144,46 @@ angular.module('vds.multirange.mk2', ['vds.multirange', 'vds.utils'])
       }
     };
   })
-  .factory('vdsMultirangeMk2Templates', function (vdsUtils) {
+  .factory('vdsMultirangeViews', function (vdsUtils) {
     var tv = vdsUtils.time.fromTimeToValue,
       vt = vdsUtils.time.fromValueToTime;
     return {
-      TIME: { zoom: { index: 0, levels: [
-          { value: 0.9, step: tv(0,15), units: [
-            { value: tv(1,0), labeller: function (n) { return vt(n).hours+'h' } },
-            { value: tv(0,30) }
-          ] },
-          { value: 1.2, step: tv(0,10), units: [
-            { value: tv(1,0), labeller: function (n) { return vt(n).hours+'h' } },
-            { value: tv(0,30) }
-          ] },
-          { value: 1.4, step: tv(0,6), units: [
-            { value: tv(1,0), labeller: function (n) { return vt(n).hours+'h' } },
-            { value: tv(0,30) },
-            { value: tv(0,12) }
-          ] },
-          { value: 3.4, step: tv(0,1), units: [
-            { value: tv(1,0) },
-            { value: tv(0,15), labeller: function (n) {
-              var h = vt(n).hours, m = vt(n).minutes;
-              if(m == 0) {
-                return h+'h';
-              } else {
-                return h+':'+m;
-              }
-            } },
-            { value: tv(0,5) }
-          ] }
+      TIME: [
+        { zoom: 0.9, step: tv(0,15), units: [
+          { value: tv(1,0), labeller: function (n) { return vt(n).hours+'h' } },
+          { value: tv(0,30) }
+        ] },
+        { zoom: 1.2, step: tv(0,10), units: [
+          { value: tv(1,0), labeller: function (n) { return vt(n).hours+'h' } },
+          { value: tv(0,30) }
+        ] },
+        { zoom: 1.4, step: tv(0,6), units: [
+          { value: tv(1,0), labeller: function (n) { return vt(n).hours+'h' } },
+          { value: tv(0,30) },
+          { value: tv(0,12) }
+        ] },
+        { zoom: 3.4, step: tv(0,1), units: [
+          { value: tv(1,0) },
+          { value: tv(0,15), labeller: function (n) {
+            var h = vt(n).hours, m = vt(n).minutes;
+            if(m == 0) {
+              return h+'h';
+            } else {
+              return h+':'+m;
+            }
+          } },
+          { value: tv(0,5) }
         ] }
-      },
-      DEFAULT: { zoom: { index: 0, levels: [
-          { value: 0.9, step: 1/40, units: [ { value: 1/10, labeller: function (n) { return n*10 } }, { value: 1/20, } ] },
-          { value: 1.5, step: 1/80, units: [ { value: 1/20, labeller: function (n) { return n*10 } }, { value: 1/40, } ] }
-        ] }
-      }
+      ],
+      DEFAULT: [
+        { zoom: 0.9, step: 1/40, units: [ { value: 1/10, labeller: function (n) { return n*10 } }, { value: 1/20, } ] },
+        { zoom: 1.5, step: 1/80, units: [ { value: 1/20, labeller: function (n) { return n*10 } }, { value: 1/40, } ] }
+      ]
     }
   });
 
-angular.module('vds.multirange', [])
-  .directive('vdsMultirange', function () {
+angular.module('vds.multirange.lite', [])
+  .directive('vdsMultirangeLite', function () {
     return {
       required: 'ngModel',
       scope: {

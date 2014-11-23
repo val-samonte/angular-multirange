@@ -1,3 +1,9 @@
+/*
+ * multirange.js v0.1.2
+ * (c) 2014 Val Allen Samonte val.samonte@gmail.com
+ * License: MIT
+ */
+
 .vds-multirange-mk2-container {
   position: relative;
   width: 100%;
@@ -15,14 +21,13 @@
   width: 100%;
   height: 35px;
   padding: 0;
-  margin: auto;
+  margin: 2px auto;
   list-style: none;
 }
 
 .vds-multirange-mk2-label {
   position: absolute;
   bottom: 0px;
-  /* border-left: 1px solid black; */
 }
 
 .vds-multirange-mk2-label span {
