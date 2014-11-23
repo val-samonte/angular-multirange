@@ -12,8 +12,8 @@ angular.module('vds.multirange', ['vds.multirange.lite', 'vds.utils'])
       required: 'ngModel',
       scope: {
         ngModel: '=',
-        views: '=',
-        view: '='
+        _views: '=views',
+        _view: '=view'
       },
       template:
       '<div class="vds-multirange-mk2-container">' +
@@ -40,7 +40,12 @@ angular.module('vds.multirange', ['vds.multirange.lite', 'vds.utils'])
           }
         });
 
-        scope.$watch('views', function (n) {
+        scope.$watch('_view', function (n) {
+          scope.view = n;
+        });
+
+        scope.$watch('_views', function (n) {
+          scope.views = n;
           scope.view = 0;
         });
 
@@ -71,6 +76,7 @@ angular.module('vds.multirange', ['vds.multirange.lite', 'vds.utils'])
         // set default view config
         if(typeof scope.views == 'undefined') {
           scope.views = vdsMultirangeViews.DEFAULT;
+          scope.view = 0;
         }
 
       }
