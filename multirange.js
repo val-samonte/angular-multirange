@@ -28,7 +28,7 @@ angular.module('vds.multirange', ['vds.multirange.lite', 'vds.utils'])
         };
 
         scope.$watch('view', function (n) {
-          if(typeof n == 'undefined') return;
+          if(typeof n == 'undefined' || typeof scope.views == 'undefined') return;
           var l = scope.views.length-1, view;
           n = (n < 0)? 0 : ( (n > l)? l : n );
           view = scope.views[n];
