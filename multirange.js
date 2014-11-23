@@ -46,7 +46,7 @@ angular.module('vds.multirange', ['vds.multirange.lite', 'vds.utils'])
 
         scope.$watch('_views', function (n) {
           scope.views = n;
-          scope.view = 0;
+          scope._view = 0;
         });
 
         scope.renderer = function () {
