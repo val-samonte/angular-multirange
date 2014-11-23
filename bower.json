@@ -5,7 +5,10 @@
     "Val <val.samonte@gmail.com>"
   ],
   "description": "Multirange slider component",
-  "main": "multirange.js",
+  "main": [
+    "multirange.js",
+    "multirange.css"
+  ],
   "keywords": [
     "multirange",
     "slider"
