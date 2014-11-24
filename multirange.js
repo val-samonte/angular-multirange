@@ -132,7 +132,7 @@ angular.module('vds.multirange', ['vds.multirange.lite', 'vds.utils'])
           var levels = n.length, hairHeight = 12, hairline, i, j, u;
           for(i = 0; i < levels; i++) {
             u = n[i];
-            for( j = 0; j<=1; j = parseFloat((j + u.value).toFixed(8)) ) {
+            for( j = 0; ((j>1)? Math.round(j*1000)/1000 : j) <= 1; j = parseFloat((j + u.value).toFixed(8)) ) {
               hairline = {
                 render: {
                   height: hairHeight * (1 - i / levels),
@@ -154,7 +154,8 @@ angular.module('vds.multirange', ['vds.multirange.lite', 'vds.utils'])
   })
   .factory('vdsMultirangeViews', function (vdsUtils) {
     var tv = vdsUtils.time.fromTimeToValue,
-      vt = vdsUtils.time.fromValueToTime;
+      vt = vdsUtils.time.fromValueToTime,
+      pad = vdsUtils.format.padZeroes;
     return {
       TIME: [
         { zoom: 0.9, step: tv(0,15), units: [
@@ -174,11 +175,7 @@ angular.module('vds.multirange', ['vds.multirange.lite', 'vds.utils'])
           { value: tv(1,0) },
           { value: tv(0,15), labeller: function (n) {
             var h = vt(n).hours, m = vt(n).minutes;
-            if(m == 0) {
-              return h+'h';
-            } else {
-              return h+':'+m;
-            }
+            return (m==0)? h+'h' : h+':'+pad(m,2);
           } },
           { value: tv(0,5) }
         ] }
@@ -277,9 +274,15 @@ angular.module('vds.utils', [])
         fromValueToTime: function (value) {
           var d = new Date(dayConst * value);
           return {
-            hours: d.getUTCHours(),
+            hours: d.getUTCHours() + ( (d.getUTCDate()-1) * 24 ),
             minutes: d.getUTCMinutes()
           };
+        }
+      },
+      format: {
+        padZeroes: function (num, size) {
+          var s = "000000000" + num;
+          return s.substr(s.length-size);
         }
       }
     }
