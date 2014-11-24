@@ -7,8 +7,7 @@ AngularJS slider component with multiple thumbs support.
 ```
 bower install val-samonte/angular-multirange
 ```
-include both multirange.js and multirange.css, 
-add `vds.multirange` as your `angular.module` dependency
+Include both multirange.js and multirange.css, then add `vds.multirange` to your `angular.module` dependencies.
 
 ###Usage
 ```html
@@ -57,12 +56,12 @@ $scope.views = [
   }
 ];
 ```
-then apply the view configuration using the views attribute
+then apply the view configuration using the views attribute.
 ```html
 <vds-multirange ng-model="rangeArray" view="viewIndex" views="views"></vds-multirange>
 ```
 ##vds-multirange-lite
-a light version of this slider also comes with this module, which excludes the label and the unit measures.
+A light version of the slider also comes with this module which excludes labels, unit of measures, zooming and views.
 ```html
 <vds-multirange-lite ng-model="rangeArray"></vds-multirange-lite>
 ```
