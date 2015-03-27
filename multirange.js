@@ -1,5 +1,5 @@
 /*
- * multirange.js v0.1.3
+ * multirange.js v0.1.4
  * (c) 2015 Ahmad Ali, ahmadalibaloch@gmail.com
  * License: MIT
  */
