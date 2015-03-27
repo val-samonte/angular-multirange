@@ -1,7 +1,10 @@
 angular-multirange
 ===================
 
-AngularJS slider component with multiple thumbs support.
+AngularJS slider component with multiple thumbs support. This fork has following new features
+1. Colors for the thumb portions
+2. Edtiable labels
+3. Thumbs will not overlap and stop when collide
 
 ###Install
 ```
