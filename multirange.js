@@ -223,6 +223,75 @@ angular.module('vds.multirange.lite', [])
             scope.preciseStep = scope.step * scope.precision;
           }
         });
+		//Multi-Color
+		//Sort by value
+		scope.ngModel.sort(
+		function(a,b)
+		{
+			if(a.value<b.value)return -1;
+			if(a.value>b.value)return 1;
+			return 0;
+		});
+	
+		//===========================================
+		var defaultColor = "rgb(235, 235, 235)";
+		//
+		scope.ngModel.map(function(el){if(!el.color || el.color=="undefined" || el.color.length < 3)el.color=defaultColor;});
+		scope.$watch('ngModel',function(nv,ov){
+					if(nv==ov)return;
+					// Control the sliders positions
+					var thisSliderVal;
+					var nextSliderVal;
+					var prevSliderVal;
+					var colorString = "";
+					var sCount = scope.ngModel.length;
+					for(var i=0;i<sCount;i++){
+						thisSliderVal = scope.ngModel[i].value;
+						if(i<(sCount-1) && i > 0){//not last or first
+							nextSliderVal = scope.ngModel[i+1].value;
+							prevSliderVal = scope.ngModel[i-1].value;
+							
+								if(thisSliderVal >= nextSliderVal){
+									scope.ngModel[i].value=nextSliderVal;
+								}
+								if(thisSliderVal <= prevSliderVal){
+									scope.ngModel[i].value=prevSliderVal;
+								}
+								//color
+								colorString += scope.ngModel[i].color+" "+scope.ngModel[i-1].value*100+"%,"+scope.ngModel[i].color+" "+scope.ngModel[i].value*100+"%,";
+						}
+						else if(i==0){//first
+							nextSliderVal = scope.ngModel[i+1].value;
+							
+							if(thisSliderVal >= nextSliderVal){
+									scope.ngModel[i].value=nextSliderVal;
+								}
+								if(thisSliderVal <= 0){
+									scope.ngModel[i].value=0;
+								}
+								//color
+								colorString += scope.ngModel[i].color+" 0%,"+scope.ngModel[i].color+" "+scope.ngModel[i].value*100+"%,";
+						}
+						else if(i==sCount-1){//last
+							prevSliderVal = scope.ngModel[i-1].value;
+							
+								if(thisSliderVal >= scope.MAX_VALUE){
+									scope.ngModel[i].value=scope.MAX_VALUE;
+								}
+								if(thisSliderVal <= prevSliderVal){
+									scope.ngModel[i].value=prevSliderVal;
+								}
+								colorString += scope.ngModel[i].color+" "+scope.ngModel[i-1].value*100+"%,"+scope.ngModel[i].color+" "+scope.ngModel[i].value*100+"%,";
+								colorString += defaultColor+" "+scope.ngModel[i].value*100+"%,"+defaultColor;
+						}
+					}
+					// Update track bar color
+					colorString = colorString.substring(0,colorString.length-1);
+					var bc = "-webkit-linear-gradient(left,"+colorString+")";
+					//find track bar div
+					var track = angular.element(elem).find("div")[0].children[0];
+					angular.element(track).css('background', bc);
+				},true);
       }
     };
   })
