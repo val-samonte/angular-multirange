@@ -95,11 +95,27 @@ angular.module('vds.multirange', ['vds.multirange.lite', 'vds.utils'])
       '<div class="vds-multirange-mk2-labels-container" ng-style="render.container">' +
         '<ul class="vds-multirange-mk2-labels" ng-style="render.content">' +
           '<li class="vds-multirange-mk2-label" ng-repeat="range in ngModel" ng-style="renderRange(range)">' +
-            '<span ng-show="range.name">{{ range.name }}</span>' +
+            '<span ng-show="range.name && !range.editing" ng-dblclick="lblDblClick(range)">{{ range.name }}</span>' +
+			'<input type="text" ng-show="range.editing" ng-keydown="done($event,range)" ng-model="range.name" />' +
           '</li>' +
         '</ul>' +
       '</div>',
       link: function (scope, elem, attr) {
+		scope.lblDblClick = function(range){
+			range.editing = true;
+			scope.backuptext=range.name;
+		};
+		scope.done = function($event,range){
+			if ($event.which === 13){
+				range.editing=false;
+			}
+			else if($event.which===8){
+				if(range.name.length > 0)return;
+				range.name=scope.backuptext;
+				range.editing=false;
+			}
+		}
+		
         scope.renderRange = function (range) {
           return {
             left: (range.value*100)+'%',
