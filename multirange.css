@@ -1,6 +1,6 @@
 /*
- * multirange.js v0.1.2
- * (c) 2014 Val Allen Samonte val.samonte@gmail.com
+ * multirange.js v0.1.3
+ * (c) 2015 Ahmad Ali, ahmadalibaloch@gmail.com
  * License: MIT
  */
 
