@@ -16,11 +16,13 @@ Include both multirange.js and multirange.css, then add `vds.multirange` to your
 rangeArray:
 ```javascript
 $scope.rangeArray = [
-  { value: 0.2, name: 'Clock In' },
-  { value: 0.4, name: 'Start Break' },
-  { value: 0.6, name: 'End Break' },
-  { value: 0.8, name: 'Clock Out' }
-]
+     { value: 0.20, name: 'Clock In',color:'red' },
+     { value: 0.40, name: 'Start Break',color:'green' },
+     { value: 0.66, name: 'End Break' ,color:'blue'},
+     { value: 0.80, name: 'Clock Out' ,color:'yellow' },
+	   { value: 0.90, name: 'Clock Out' ,color:'cyan' },
+	   { value: 0.50, name: 'Clock Out' ,color:'brown' }
+    ];
 ```
 
 ###vds-multirange sample view configuration
