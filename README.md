@@ -12,7 +12,7 @@ AngularJS slider component with multiple thumbs support. This fork has following
 
 ###Install
 ```
-bower install val-samonte/angular-multirange
+bower install angular-multirange
 ```
 Include both multirange.js and multirange.css, then add `vds.multirange` to your `angular.module` dependencies.
 
