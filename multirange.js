@@ -13,16 +13,16 @@ angular.module('vds.multirange', ['vds.multirange.lite', 'vds.utils'])
       scope: {
         ngModel: '=',
         _views: '=views',
-        _view: '=view'
+        _view: '=view',
+		gradient:'='
       },
       template:
       '<div class="vds-multirange-mk2-container">' +
         '<vds-multirange-labels render="renderedStyle" ng-model="ngModel"></vds-multirange-labels>' +
-        '<vds-multirange-lite ng-model="ngModel" ng-style="renderedStyle.multirange" step="step"></vds-multirange-lite>' +
+        '<vds-multirange-lite ng-model="ngModel" ng-style="renderedStyle.multirange" gradient="gradient" step="step"></vds-multirange-lite>' +
         '<vds-multirange-hairlines render="renderedStyle" ng-model="units"></vds-multirange-hairlines>' +
       '</div>',
       link: function (scope, elem, attr) {
-
         scope.getPercent = function(value) {
           return (value*100) + '%';
         };
@@ -209,7 +209,8 @@ angular.module('vds.multirange.lite', [])
       required: 'ngModel',
       scope: {
         ngModel: '=',
-        step: '='
+        step: '=',
+		gradient:'='
       },
       template:
       '<div class="vds-multirange-container" ng-mousemove="onMouseMove($event)">' +
@@ -219,6 +220,8 @@ angular.module('vds.multirange.lite', [])
         '</div>' +
       '</div>',
       link: function (scope, elem, attr) {
+		  		console.log(scope.gradient);
+
         var mousex;
         scope.precision = 1000000;
         scope.preciseStep = 1;
@@ -274,7 +277,12 @@ angular.module('vds.multirange.lite', [])
 									scope.ngModel[i].value=prevSliderVal;
 								}
 								//color
-								colorString += scope.ngModel[i].color+" "+scope.ngModel[i-1].value*100+"%,"+scope.ngModel[i].color+" "+scope.ngModel[i].value*100+"%,";
+								if(scope.gradient){
+									colorString +=scope.ngModel[i].color+" "+scope.ngModel[i].value*100+"%,";
+								}
+								else{
+									colorString += scope.ngModel[i].color+" "+scope.ngModel[i-1].value*100+"%,"+scope.ngModel[i].color+" "+scope.ngModel[i].value*100+"%,";
+								}	
 						}
 						else if(i==0){//first
 							nextSliderVal = scope.ngModel[i+1].value;
@@ -286,7 +294,12 @@ angular.module('vds.multirange.lite', [])
 									scope.ngModel[i].value=0;
 								}
 								//color
+								if(scope.gradient){
+									colorString +=scope.ngModel[i].color+" "+scope.ngModel[i].value*100+"%,";
+								}
+								else{
 								colorString += scope.ngModel[i].color+" 0%,"+scope.ngModel[i].color+" "+scope.ngModel[i].value*100+"%,";
+								}
 						}
 						else if(i==sCount-1){//last
 							prevSliderVal = scope.ngModel[i-1].value;
@@ -297,8 +310,13 @@ angular.module('vds.multirange.lite', [])
 								if(thisSliderVal <= prevSliderVal){
 									scope.ngModel[i].value=prevSliderVal;
 								}
+								if(scope.gradient){
+									colorString +=scope.ngModel[i].color+" "+scope.ngModel[i].value*100+"%,";
+								}
+								else{
 								colorString += scope.ngModel[i].color+" "+scope.ngModel[i-1].value*100+"%,"+scope.ngModel[i].color+" "+scope.ngModel[i].value*100+"%,";
-								colorString += defaultColor+" "+scope.ngModel[i].value*100+"%,"+defaultColor;
+								colorString += defaultColor+" "+scope.ngModel[i].value*100+"%,"+defaultColor;	
+								}
 						}
 					}
 					// Update track bar color
