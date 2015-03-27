@@ -3,7 +3,7 @@ angular-multirange
 
 AngularJS slider component with multiple thumbs support. This fork has following new features
 
-1. Colors for the thumb portions
+1. Colors for the thumb portions, or a gradient at the thumb spot
 2. Edtiable labels
 3. Thumbs will not overlap and stop when collide
 
@@ -19,6 +19,7 @@ Include both multirange.js and multirange.css, then add `vds.multirange` to your
 ###Usage
 ```html
 <vds-multirange ng-model="rangeArray" view="viewIndex"></vds-multirange>
+<vds-multirange ng-model="rangeArray" view="viewIndex" gradient="true"></vds-multirange>
 ```
 rangeArray:
 ```javascript
@@ -27,8 +28,8 @@ $scope.rangeArray = [
      { value: 0.40, name: 'Start Break',color:'green' },
      { value: 0.66, name: 'End Break' ,color:'blue'},
      { value: 0.80, name: 'Clock Out' ,color:'yellow' },
-	   { value: 0.90, name: 'Clock Out' ,color:'cyan' },
-	   { value: 0.50, name: 'Clock Out' ,color:'brown' }
+     { value: 0.90, name: 'Clock Out' ,color:'cyan' },
+     { value: 0.50, name: 'Clock Out' ,color:'brown' }
     ];
 ```
 
