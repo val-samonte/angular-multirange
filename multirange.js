@@ -324,12 +324,10 @@ angular.module('vds.multirange.lite', [])
 					var bc = "linear-gradient(left,"+colorString+")";
 					//find track bar div
 					var track = angular.element(elem).find("div")[0].children[0];
-					var trackEl = angular.element(track);
-					// multi-browser prefixes for linear-gradient
-					trackEl.css('background', '-webkit-' + bc);
-					trackEl.css('background', '-moz-' + bc);
-					trackEl.css('background', '-o-' + bc);
-					trackEl.css('background', bc);
+					// multi-browser prefixes for linear-gradient (an empty element represents no prefix, i.e. 'linear-gradient')
+					['-webkit-', '-moz-', '-o-', ''].forEach(function(prefix) {
+						angular.element(track).css('background', prefix + bc);
+					});
 				},true);
       }
     };
