@@ -321,10 +321,13 @@ angular.module('vds.multirange.lite', [])
 					}
 					// Update track bar color
 					colorString = colorString.substring(0,colorString.length-1);
-					var bc = "-webkit-linear-gradient(left,"+colorString+")";
+					var bc = "linear-gradient(left,"+colorString+")";
 					//find track bar div
 					var track = angular.element(elem).find("div")[0].children[0];
-					angular.element(track).css('background', bc);
+					// multi-browser prefixes for linear-gradient (an empty element represents no prefix, i.e. 'linear-gradient')
+					['-webkit-', '-moz-', '-o-', ''].forEach(function(prefix) {
+						angular.element(track).css('background', prefix + bc);
+					});
 				},true);
       }
     };
