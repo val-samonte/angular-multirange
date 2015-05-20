@@ -118,6 +118,7 @@
   margin: 1px 0 0 0;
   padding: 0;
   cursor: pointer;
+  box-shadow:none;
 }
 
 .vds-multirange:focus {
