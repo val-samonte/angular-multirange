@@ -230,7 +230,8 @@ angular.module('vds.multirange.lite', [])
           mousex = (evt.pageX - bound.left) / bound.width;
         };
         scope.computeDepth = function (range) {
-          range._depth = 100 - Math.round(Math.abs(mousex-range.value)*100);
+          var depth = 100 - Math.round(Math.abs(mousex-range.value)*100);
+          range._depth = depth >=0 ? depth : 0;
           return {
             zIndex: range._depth
           };

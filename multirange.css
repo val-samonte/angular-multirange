@@ -118,10 +118,16 @@
   margin: 1px 0 0 0;
   padding: 0;
   cursor: pointer;
+  box-shadow:none;
 }
 
 .vds-multirange:focus {
   outline: none;
+}
+
+/*http://stackoverflow.com/questions/18794026/remove-dotted-outline-from-range-input-element-in-firefox*/
+.vds-multirange::-moz-focus-outer {
+  border: 0;
 }
 
 .vds-multirange::-webkit-slider-thumb {
