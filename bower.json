@@ -1,8 +1,8 @@
 {
   "name": "multirange",
-  "version": "0.1.2",
+  "version": "0.1.4",
   "authors": [
-    "Val <val.samonte@gmail.com>"
+    "Ahmad Ali <ahmadalibaloch@gmail.com>"
   ],
   "description": "Multirange slider component",
   "main": [
@@ -14,7 +14,7 @@
     "slider"
   ],
   "license": "MIT",
-  "homepage": "val-samonte.github.io/multirange.html",
+  "homepage": "ahmadalibaloch.github.io/multirange.html",
   "ignore": [
     "**/.*",
     "node_modules",

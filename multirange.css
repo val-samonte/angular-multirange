@@ -1,6 +1,6 @@
 /*
- * multirange.js v0.1.2
- * (c) 2014 Val Allen Samonte val.samonte@gmail.com
+ * multirange.js v0.1.4
+ * (c) 2015 Ahmad Ali, ahmadalibaloch@gmail.com
  * License: MIT
  */
 
@@ -39,6 +39,18 @@
   text-align: center;
   background-color: rgba(0,0,0,0.75);
   border: none;
+  border-radius: 8px;
+  padding: 4px 6px;
+}
+.vds-multirange-mk2-label input[type="text"] {
+  display: inline-block;
+  margin-left: -50%;
+  font-size: 11px;
+  color: #4C4040;
+  font-family: 'Arial', sans-serif;
+  text-align: center;
+  background-color: rgba(227, 237, 230, 0.17);
+  border: 1px solid;
   border-radius: 8px;
   padding: 4px 6px;
 }
@@ -106,10 +118,16 @@
   margin: 1px 0 0 0;
   padding: 0;
   cursor: pointer;
+  box-shadow:none;
 }
 
 .vds-multirange:focus {
   outline: none;
+}
+
+/*http://stackoverflow.com/questions/18794026/remove-dotted-outline-from-range-input-element-in-firefox*/
+.vds-multirange::-moz-focus-outer {
+  border: 0;
 }
 
 .vds-multirange::-webkit-slider-thumb {

@@ -1,6 +1,6 @@
 /*
- * multirange.js v0.1.2
- * (c) 2014 Val Allen Samonte val.samonte@gmail.com
+ * multirange.js v0.1.4
+ * (c) 2015 Ahmad Ali, ahmadalibaloch@gmail.com
  * License: MIT
  */
 
@@ -13,16 +13,16 @@ angular.module('vds.multirange', ['vds.multirange.lite', 'vds.utils'])
       scope: {
         ngModel: '=',
         _views: '=views',
-        _view: '=view'
+        _view: '=view',
+		gradient:'='
       },
       template:
       '<div class="vds-multirange-mk2-container">' +
         '<vds-multirange-labels render="renderedStyle" ng-model="ngModel"></vds-multirange-labels>' +
-        '<vds-multirange-lite ng-model="ngModel" ng-style="renderedStyle.multirange" step="step"></vds-multirange-lite>' +
+        '<vds-multirange-lite ng-model="ngModel" ng-style="renderedStyle.multirange" gradient="gradient" step="step"></vds-multirange-lite>' +
         '<vds-multirange-hairlines render="renderedStyle" ng-model="units"></vds-multirange-hairlines>' +
       '</div>',
       link: function (scope, elem, attr) {
-
         scope.getPercent = function(value) {
           return (value*100) + '%';
         };
@@ -95,11 +95,27 @@ angular.module('vds.multirange', ['vds.multirange.lite', 'vds.utils'])
       '<div class="vds-multirange-mk2-labels-container" ng-style="render.container">' +
         '<ul class="vds-multirange-mk2-labels" ng-style="render.content">' +
           '<li class="vds-multirange-mk2-label" ng-repeat="range in ngModel" ng-style="renderRange(range)">' +
-            '<span ng-show="range.name">{{ range.name }}</span>' +
+            '<span ng-show="range.name && !range.editing" ng-dblclick="lblDblClick(range)">{{ range.name }}</span>' +
+			'<input type="text" ng-show="range.editing" ng-keydown="done($event,range)" ng-model="range.name" />' +
           '</li>' +
         '</ul>' +
       '</div>',
       link: function (scope, elem, attr) {
+		scope.lblDblClick = function(range){
+			range.editing = true;
+			scope.backuptext=range.name;
+		};
+		scope.done = function($event,range){
+			if ($event.which === 13){
+				range.editing=false;
+			}
+			else if($event.which===8){
+				if(range.name.length > 0)return;
+				range.name=scope.backuptext;
+				range.editing=false;
+			}
+		}
+		
         scope.renderRange = function (range) {
           return {
             left: (range.value*100)+'%',
@@ -193,7 +209,8 @@ angular.module('vds.multirange.lite', [])
       required: 'ngModel',
       scope: {
         ngModel: '=',
-        step: '='
+        step: '=',
+		gradient:'='
       },
       template:
       '<div class="vds-multirange-container" ng-mousemove="onMouseMove($event)">' +
@@ -203,6 +220,8 @@ angular.module('vds.multirange.lite', [])
         '</div>' +
       '</div>',
       link: function (scope, elem, attr) {
+		  		console.log(scope.gradient);
+
         var mousex;
         scope.precision = 1000000;
         scope.preciseStep = 1;
@@ -211,7 +230,8 @@ angular.module('vds.multirange.lite', [])
           mousex = (evt.pageX - bound.left) / bound.width;
         };
         scope.computeDepth = function (range) {
-          range._depth = 100 - Math.round(Math.abs(mousex-range.value)*100);
+          var depth = 100 - Math.round(Math.abs(mousex-range.value)*100);
+          range._depth = depth >=0 ? depth : 0;
           return {
             zIndex: range._depth
           };
@@ -223,6 +243,93 @@ angular.module('vds.multirange.lite', [])
             scope.preciseStep = scope.step * scope.precision;
           }
         });
+		//Multi-Color
+		//Sort by value
+		scope.ngModel.sort(
+		function(a,b)
+		{
+			if(a.value<b.value)return -1;
+			if(a.value>b.value)return 1;
+			return 0;
+		});
+	
+		//===========================================
+		var defaultColor = "rgb(235, 235, 235)";
+		//
+		scope.ngModel.map(function(el){if(!el.color || el.color=="undefined" || el.color.length < 3)el.color=defaultColor;});
+		scope.$watch('ngModel',function(nv,ov){
+					if(nv==ov)return;
+					// Control the sliders positions
+					var thisSliderVal;
+					var nextSliderVal;
+					var prevSliderVal;
+					var colorString = "";
+					var sCount = scope.ngModel.length;
+					for(var i=0;i<sCount;i++){
+						thisSliderVal = scope.ngModel[i].value;
+						if(i<(sCount-1) && i > 0){//not last or first
+							nextSliderVal = scope.ngModel[i+1].value;
+							prevSliderVal = scope.ngModel[i-1].value;
+							
+								if(thisSliderVal >= nextSliderVal){
+									scope.ngModel[i].value=nextSliderVal;
+								}
+								if(thisSliderVal <= prevSliderVal){
+									scope.ngModel[i].value=prevSliderVal;
+								}
+								//color
+								if(scope.gradient){
+									colorString +=scope.ngModel[i].color+" "+scope.ngModel[i].value*100+"%,";
+								}
+								else{
+									colorString += scope.ngModel[i].color+" "+scope.ngModel[i-1].value*100+"%,"+scope.ngModel[i].color+" "+scope.ngModel[i].value*100+"%,";
+								}	
+						}
+						else if(i==0){//first
+							nextSliderVal = scope.ngModel[i+1].value;
+							
+							if(thisSliderVal >= nextSliderVal){
+									scope.ngModel[i].value=nextSliderVal;
+								}
+								if(thisSliderVal <= 0){
+									scope.ngModel[i].value=0;
+								}
+								//color
+								if(scope.gradient){
+									colorString +=scope.ngModel[i].color+" "+scope.ngModel[i].value*100+"%,";
+								}
+								else{
+								colorString += scope.ngModel[i].color+" 0%,"+scope.ngModel[i].color+" "+scope.ngModel[i].value*100+"%,";
+								}
+						}
+						else if(i==sCount-1){//last
+							prevSliderVal = scope.ngModel[i-1].value;
+							
+								if(thisSliderVal >= scope.MAX_VALUE){
+									scope.ngModel[i].value=scope.MAX_VALUE;
+								}
+								if(thisSliderVal <= prevSliderVal){
+									scope.ngModel[i].value=prevSliderVal;
+								}
+								if(scope.gradient){
+									colorString +=scope.ngModel[i].color+" "+scope.ngModel[i].value*100+"%,";
+								}
+								else{
+								colorString += scope.ngModel[i].color+" "+scope.ngModel[i-1].value*100+"%,"+scope.ngModel[i].color+" "+scope.ngModel[i].value*100+"%,";
+								colorString += defaultColor+" "+scope.ngModel[i].value*100+"%,"+defaultColor;	
+								}
+						}
+					}
+					// Update track bar color
+					colorString = colorString.substring(0,colorString.length-1);
+					var bc = "linear-gradient(left,"+colorString+")";
+					//find track bar div
+					var track = angular.element(elem).find("div")[0].children[0];
+					// multi-browser prefixes for linear-gradient (an empty element represents no prefix, i.e. 'linear-gradient')
+					['-webkit-', '-moz-', '-o-', ''].forEach(function(prefix) {
+						angular.element(track).css('background', prefix + bc);
+					});
+				},true);
       }
     };
   })
