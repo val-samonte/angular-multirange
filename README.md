@@ -1,6 +1,10 @@
 angular-multirange
 ===================
 
+###WARNING: THIS PROJECT IS NOT MAINTAINED
+
+If you are interested in this project, please feel free to fork. I do not have the luxury of maintaining this project anymore.
+
 AngularJS slider component with multiple thumbs support. This fork has following new features
 
 1. Colors for the thumb portions, or a gradient at the thumb spot
