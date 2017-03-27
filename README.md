@@ -1,7 +1,7 @@
 angular-multirange
 ===================
 
-###WARNING: THIS PROJECT IS NOT MAINTAINED
+WARNING: THIS PROJECT IS NO LONGER MAINTAINED
 
 If you are interested in this project, please feel free to fork. I do not have the luxury of maintaining this project anymore.
 
